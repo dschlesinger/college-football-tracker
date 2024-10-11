@@ -25,7 +25,7 @@
     
     console.log(team)
 
-    $: c = isAlt ? team.altColor : team.color
+    $: c = isAlt ? (getColorSimilarity(team) > 2_000 ? team.altColor : (getDarkness(team) > 200_000 ? '#000000' : '#EEEEEE')) : team.color
 
     $: ci = isAlt ? team.color : (getColorSimilarity(team) > 2_000 ? team.altColor : (getDarkness(team) > 200_000 ? '#000000' : '#EEEEEE'))
 
