@@ -23,7 +23,9 @@
 	"type": "module",
 	"dependencies": {
 		"bits-ui": "^0.21.16",
+		"cfb.js": "^4.3.2",
 		"clsx": "^2.1.1",
+		"dotenv": "^16.4.5",
 		"tailwind-merge": "^2.5.3",
 		"tailwind-variants": "^0.2.1"
 	}

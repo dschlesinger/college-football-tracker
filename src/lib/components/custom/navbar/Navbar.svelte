@@ -1,35 +1,79 @@
-<script>
+<script lang='ts'>
 
     import { Button } from "$lib/components/ui/button";
 
+    import { onMount } from "svelte";
+
+    import { themeStore, AltTheme } from "../themeStore/themeStore";
+
     export let links = [
        { name: 'Home', href: '/' },
-       { name: 'Games', href: '/games' },
+       { name: 'Teams', href: '/teams' },
        { name: 'Watch', href: '/watch' }
     ];
 
-    let isDarkMode = false;
+    
+
+    let isDarkMode = false
+
+    let isAlt = false
 
     function toggleDarkMode() {
-        isDarkMode = !isDarkMode;
-        if (isDarkMode) {
-            document.documentElement.classList.add('dark');
-            localStorage.setItem('theme', 'dark');
-        } else {
-            document.documentElement.classList.remove('dark');
-            localStorage.setItem('theme', 'light');
-        }
-    } 
+
+         themeStore.update(currentTheme => {
+            const newTheme = !currentTheme
+
+            isDarkMode = !currentTheme
+
+            localStorage.setItem('theme', !currentTheme ? 'dark' : 'light');
+            
+            if (newTheme === true) // to dark mode
+            {
+               document.documentElement.classList.add('dark');
+            }
+            else // light
+            {
+               document.documentElement.classList.remove('dark');
+            }
+
+            return newTheme;
+         });
+      }
+
+   function toggleAlt() {
+
+      AltTheme.update(currentTheme => {
+         const newTheme = !currentTheme
+
+         isAlt = !currentTheme
+
+         localStorage.setItem('alt', !currentTheme ? 'yes' : 'no');
+
+         return newTheme;
+      });
+}
+
 
     import { page } from '$app/stores';
 
-    import { onMount } from 'svelte';
-
     $: currentRoute = $page.url.pathname;
 
-   //  onMount(() => {
-   //    toggleDarkMode()
-   //  })
+    onMount(() => {
+
+      if (localStorage.getItem('theme') === 'dark') 
+      {
+         document.documentElement.classList.add('dark');
+         themeStore.set(true)
+         isDarkMode = true
+      }
+
+      if (localStorage.getItem('alt') === 'yes') 
+      {
+         AltTheme.set(true)
+         isAlt = true
+      }
+
+    })
 
    //  window.onload = toggleDarkMode;
     
@@ -41,7 +85,7 @@
        <div class="text-lg font-bold flex-1 dark:text-white">CFB Gameday ({currentRoute})</div>
  
        <!-- Navigation Links -->
-       <div class="space-x-6 flex-4 flex">
+       <div class="space-x-6 flex-1 flex justify-center text-center">
           {#each links as link}
              <a
                 href={link.href}
@@ -50,14 +94,25 @@
              >
           {/each}
        </div>
-       <div class="flex-1 flex justify-center">
-        <Button on:click={toggleDarkMode} class="text-gray-700 dark:text-black">
-            {#if isDarkMode}
-              <span>🌞 Light Mode</span>
-            {:else}
-              <span>🌙 Dark Mode</span>
-            {/if}
-          </Button>
-       </div>
+       <div class="flex flex-1 justify-center space-x-4">
+         <div class="flex justify-center">
+         <Button on:click={toggleDarkMode} class="text-white dark:text-black">
+               {#if isDarkMode}
+               <span>🌙 Dark Mode</span>
+               {:else}
+               <span>🌞 Light Mode</span>
+               {/if}
+            </Button>
+         </div>
+         <div class=" flex justify-center">
+            <Button on:click={toggleAlt} class={`text-white ${isAlt ? 'bg-red-700' : 'bg-green-700'}`}>
+               {#if isAlt}
+                  <span>Alt</span>
+               {:else}
+                  <span>Regular</span>
+               {/if}
+            </Button>
+         </div>
+      </div>
     </div>
  </nav>
