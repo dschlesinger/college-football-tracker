@@ -105,17 +105,24 @@
     <div style='background-color: {ci + "80"};' class="flex-5 flex justify-center p-1 rounded-full ">
         <img style="" src={ logo } alt="Team Logo" width="30" height="30" /> 
     </div>
-    <div style="background-color: #80808000;" class="flex-6">
+    <div style="background-color: #80808000;" class="flex-6 flex flex-col">
 
-        {#if team.school.length > 15 && typeof team.abbreviation != 'undefined' } 
+        <div>
+            {#if team.school.length > 15 && typeof team.abbreviation != 'undefined' } 
 
-        { team.abbreviation}
+            { team.abbreviation}
 
-        {:else}
+            {:else}
 
-        { team.school }
+            { team.school }
 
-        {/if}
+            {/if}
+
+        </div>
+
+        <div>
+            { 0 }
+        </div>
 
         <!-- {#if getColorSimilarity(team) < 2000}
 
