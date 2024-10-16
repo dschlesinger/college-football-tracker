@@ -6,25 +6,45 @@
   
   import { onMount } from "svelte";
 
-  export let data;
+  // import {  }
+
+  export let teamdata;
+  export let records;
   export let error;
 
   export let i = 0;
 
-  console.log(i)
+  // console.log(i)
 
-  data = JSON.parse(data.data)
+  teamdata = JSON.parse(teamdata)
 
-  console.log(data)
+  records = JSON.parse(records)
 
-  let num_teams = data.length
+  let num_teams = teamdata.length
 
-  console.log(num_teams)
+  // console.log(num_teams)
 
   let query = ''
 
-  $: filtered_teams = data.filter(team => team.school.toLowerCase().includes(query.toLowerCase()) || team.abbreviation.toLowerCase().includes(query.toLowerCase()))
+  $: filtered_teams = teamdata.filter(team => team.school.toLowerCase().includes(query.toLowerCase()) || ((team.abbreviation != null) ? team.abbreviation.toLowerCase().includes(query.toLowerCase()) : false) || ((team.conference != null) ? (team.conference.toLowerCase().includes(query.toLowerCase())) : false))
 
+
+  async function getTeamRecord() {
+
+    try {
+          const response = await fetch('api/cfb/gamesapi/teamrecords', {
+              method: 'POST',
+              headers: {
+              'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ })  // Send the user input to the backend
+          });
+
+          return await response.json()
+      } catch (error) {
+      console.error('Error:', error);
+      }
+    }
 
   function handleKeyPress(event) {
     if (event.key === 'ArrowRight') {
@@ -41,7 +61,17 @@
     }
   }
 
+  let record = {}
+
+
   onMount(() => {
+
+  //   getTeamRecord().then((r) =>
+  //   {r.forEach(element => {
+  //     console.log(element);
+  //     record[element.team] = element.total
+  //   })
+
 
     window.addEventListener('keydown', handleKeyPress);
 
@@ -65,7 +95,7 @@
 {:else}
   <div class="grid grid-cols-4 gap-5 p-7">
     {#each filtered_teams.slice(i*16, (i*16)+16) as team, index}
-      <GameCard {team} />
+      <GameCard { team } record = { records[team.school] } />
     {/each}
   </div>
 {/if}

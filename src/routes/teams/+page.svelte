@@ -6,12 +6,10 @@
     export let data
     export let error;
 
+    console.log(typeof data.teamdata, typeof data.records)
+
     let i = 0;
-
-    console.log(data)
-
-    console.log(error)
 
 </script>
 
-<GameDisplay { data } {error} { i } />
+<GameDisplay  teamdata = { data.teamdata } records = { data.records } {error} { i } />

@@ -7,7 +7,7 @@
 
     import { themeStore, AltTheme } from "../themeStore/themeStore";
 
-    console.log(themeStore)
+    // console.log(themeStore)
 
     let isDarkMode = false;
 
@@ -22,31 +22,21 @@
     })
 
     export let team;
+
+    export let record;
     
-    console.log(team)
+    // console.log(team)
 
-    $: c = isAlt ? (getColorSimilarity(team) > 2_000 ? team.altColor : (getDarkness(team) > 200_000 ? '#000000' : '#EEEEEE')) : team.color
+    $: c = team.color != null ? (team.altColor != null ? (isAlt ? (getColorSimilarity(team) > 2_000 ? team.altColor : (getDarkness(team) > 200_000 ? '#000_000' : '#EEE_EEE')) : team.color) : team.color) : '#000_000'
 
-    $: ci = isAlt ? team.color : (getColorSimilarity(team) > 2_000 ? team.altColor : (getDarkness(team) > 200_000 ? '#000000' : '#EEEEEE'))
+    $: ci = team.altColor != null ? (team.color != null ? (isAlt ? team.color : (getColorSimilarity(team) > 2_000 ? team.altColor : (getDarkness(team) > 200_000 ? '#000_000' : '#EEE_EEE'))) : team.altColor) : '#EEE_EEE'
 
-    $: logo = isAlt ? team.logos[1] : team.logos[0]
+    $: logo = team.logos[0] != undefined ? (isAlt ? team.logos[1] : team.logos[0]) : 'favicon.png'
 
-    // function getColor(team) {
-        
-    //         try 
-    //         { 
-    //             c = localStorage.getItem('theme') == "dark" ? team.color : team.altColor 
-
-    //             ci = localStorage.getItem('theme') == "dark" ? team.altColor : team.color
-    //         } 
-    //         catch 
-    //         { 
-    //             c = team.color 
-
-    //             ci = team.altColor
-    //         }
-    //     }
-
+    function imgNotFound() 
+    {
+        document.getElementById('logo').src = 'favicon.png'
+    }
 
     function getColors(team) {
         let c = team.color
@@ -87,10 +77,14 @@
         return score
     }
 
+    console.log(record)
+
     onMount(
         () => {
 
-            // getColor(team
+            // submitData().then((responseData) => {record = responseData[0].total; document.getElementById("record-" + team.school).innerHTML = record.wins + ' : ' + record.losses; console.log(responseData)})
+
+            // getColor(team)
 
             // getColorSimilarity(team)
 
@@ -103,14 +97,14 @@
 <Card style='background-color: {c}; color: {ci};' class="flex gap-2 items-center justify-center h-32 text-lg font-semibold">
     
     <div style='background-color: {ci + "80"};' class="flex-5 flex justify-center p-1 rounded-full ">
-        <img style="" src={ logo } alt="Team Logo" width="30" height="30" /> 
+        <img id='logo' style="" on:error={  (e) => {e.preventDefault(); e.target.src = 'favicon.png'} } src={ logo } alt="Team Logo" width="30" height="30" /> 
     </div>
-    <div style="background-color: #80808000;" class="flex-6 flex flex-col">
+    <div style="background-color: #80808000;" class="flex-6 flex flex-col justify-center">
 
         <div>
             {#if team.school.length > 15 && typeof team.abbreviation != 'undefined' } 
 
-            { team.abbreviation}
+            { team.abbreviation }
 
             {:else}
 
@@ -120,8 +114,18 @@
 
         </div>
 
-        <div>
-            { 0 }
+        <div id="record-{ team.school }">
+
+            {#if record != undefined}
+
+            { record.total.wins } : { record.total.losses } 
+
+            {:else}
+
+            No Record
+
+            {/if}
+
         </div>
 
         <!-- {#if getColorSimilarity(team) < 2000}
