@@ -26,7 +26,7 @@
 
   let query = ''
 
-  $: filtered_teams = teamdata.filter(team => team.school.toLowerCase().includes(query.toLowerCase()) || ((team.abbreviation != null) ? team.abbreviation.toLowerCase().includes(query.toLowerCase()) : false) || ((team.conference != null) ? (team.conference.toLowerCase().includes(query.toLowerCase())) : false))
+  $: filtered_teams = teamdata.filter(team => team.school.toLowerCase().includes(query.toLowerCase()) || ((team.abbreviation != null) ? team.abbreviation.toLowerCase().includes(query.toLowerCase()) : false) || ((team.conference != null) ? (team.conference.toLowerCase().includes(query.toLowerCase())) : false) || ((team.mascot != null) ? (team.mascot.toLowerCase().includes(query.toLowerCase())) : false))
 
 
   async function getTeamRecord() {
