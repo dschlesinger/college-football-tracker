@@ -18,13 +18,13 @@ export async function POST({ request }) {
     }
 
     // Call the API using your Node package
-    const apiInstance = new cfb.GamesApi();
+    const apiInstance = new cfb.RankingsApi();
 
-    let data = await apiInstance.getTeamRecords(opts)
+    let data = await apiInstance.getRankings(2024, opts)
 
     // Return the data in a JSON response
     return json(data);
   } catch (error) {
-    return json({ error: 'Failed to fetch data from the API' }, { status: 500 });
+    return json({ error: `Failed to fetch data from the API ${error}` }, { status: 500 });
   }
 }

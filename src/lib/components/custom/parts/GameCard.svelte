@@ -24,19 +24,16 @@
     export let team;
 
     export let record;
+
+    export let ranking;
     
-    // console.log(team)
+    console.log('ranking: ', ranking)
 
     $: c = team.color != null ? (team.altColor != null ? (isAlt ? (getColorSimilarity(team) > 2_000 ? team.altColor : (getDarkness(team) > 200_000 ? '#000_000' : '#EEE_EEE')) : team.color) : team.color) : '#000_000'
 
     $: ci = team.altColor != null ? (team.color != null ? (isAlt ? team.color : (getColorSimilarity(team) > 2_000 ? team.altColor : (getDarkness(team) > 200_000 ? '#000_000' : '#EEE_EEE'))) : team.altColor) : '#EEE_EEE'
 
     $: logo = team.logos[0] != undefined ? (isAlt ? team.logos[1] : team.logos[0]) : 'favicon.png'
-
-    function imgNotFound() 
-    {
-        document.getElementById('logo').src = 'favicon.png'
-    }
 
     function getColors(team) {
         let c = team.color
@@ -77,8 +74,6 @@
         return score
     }
 
-    console.log(record)
-
     onMount(
         () => {
 
@@ -91,14 +86,26 @@
         }
     )
 
+    let ranking_colors = {
+        1: 'yellow-500',
+        2: 'gray-300',
+        3: '[#B87333]'
+    }
 
 </script>
   
 <Card style='background-color: {c}; color: {ci};' class="flex gap-2 items-center justify-center h-32 text-lg font-semibold">
     
+    {#if ranking?.rank}
+    <div class='text-center bg-{ ranking?.rank in ranking_colors ? ranking_colors[ranking?.rank] : 'gray-500' }  text-white rounded-full px-2'>
+        { ranking?.rank ?? '' }
+    </div>
+    {/if}
+
     <div style='background-color: {ci + "80"};' class="flex-5 flex justify-center p-1 rounded-full ">
         <img id='logo' style="" on:error={  (e) => {e.preventDefault(); e.target.src = 'favicon.png'} } src={ logo } alt="Team Logo" width="30" height="30" /> 
     </div>
+
     <div style="background-color: #80808000;" class="flex-6 flex flex-col justify-center">
 
         <div>
@@ -116,27 +123,13 @@
 
         <div id="record-{ team.school }">
 
-            {#if record != undefined}
-
-            { record.total.wins } : { record.total.losses } 
-
-            {:else}
-
-            No Record
-
-            {/if}
+            { record?.total.wins ?? '-' } : { record?.total.losses ?? '-' } 
 
         </div>
 
-        <!-- {#if getColorSimilarity(team) < 2000}
-
-        <div class='bg-red-500 text-white'>Unsafe {getDarkness(team)}</div>
-
-        {:else}
-
-        <div class='bg-green-500 text-white'>Safe</div>
-
-        {/if} -->
+        <div style="color: {ci};" class=" text-xs">
+            { team?.conference ?? 'No Confrence' }
+        </div>
 
     </div>
 </Card>
