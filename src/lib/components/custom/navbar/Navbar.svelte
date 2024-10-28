@@ -10,7 +10,7 @@
        { name: 'Home', href: '/' },
        { name: 'Teams', href: '/teams' },
        { name: 'Watch', href: '/watch' },
-       { name: 'Ratings', href: '/ratings' }
+       { name: 'Rankings', href: '/rankings' }
     ];
 
     

@@ -1,8 +1,7 @@
-<script lang='ts'>
-
-  import { json } from "@sveltejs/kit";
-
-  import GameCard from "../parts/GameCard.svelte";
+<script>   
+    import GameCard from "$lib/components/custom/parts/GameCard.svelte";
+    
+    import { json } from "@sveltejs/kit";
   
   import { onMount } from "svelte";
 
@@ -20,9 +19,9 @@
 
   // user choices
 
-  export let display_length = 4
+  let display_length = 4
   
-  export let display_width = 4
+  let display_width = 4
 
   let year = 2024
 
@@ -33,6 +32,10 @@
   let query = ''
 
   let filtered_teams = []
+
+  $: week_ranks = rankings[week ?? rankings.length -1]?.polls.filter(p => p.poll == poll)[0].ranks
+
+//   $: week_teams = week_ranks != undefined ? week_ranks.map((team) => team.school) : undefined
 
   // filters teams based on search, if fails then display nothing
   $: {
@@ -75,8 +78,20 @@
 
     let updateRankings;
 
+    // loading complete
+
+    let ranking_loaded = false
+
+    let records_loaded = false
+
+    let teams_loaded = false
+
+    $: full_load = ranking_loaded && records_loaded && teams_loaded
+
     onMount(
         () => {
+
+            rendered = true
 
           window.addEventListener('keydown', handleKeyPress);
 
@@ -90,6 +105,8 @@
               {
                 teams.push(r[team])
               }
+
+              teams_loaded = true
             })
 
 
@@ -100,6 +117,8 @@
                 getTeamRecord(year, week).then((r) => r.forEach((element) => records[element.team] = element))
 
                 console.log("Recording!")
+
+                records_loaded = true
             }
 
             updateRecords(year, week)
@@ -109,6 +128,8 @@
                 getRankings(year, week).then((r) => {console.log(r, r.length); rankings = r; console.log(rankings.length)})
 
                 console.log("Ranking!")
+
+                ranking_loaded = true
             }
 
             updateRankings(year, week)
@@ -185,24 +206,17 @@
         console.error('Error:', error);
       }
     }
-  
-</script>
 
-<div class="flex w-full justify-center">
+</script> 
 
-  <div class="">
+<div class="flex w-[10]">
 
-    <label for="name">Enter your name:</label>
-    <input class="dark:text-black max-w-sm" id="name" type="text" bind:value={query} placeholder="Type your name" />
-
+  <div class="grid grid-cols-5 grid-rows-5 gap-5 p-7 ">
+      {#if week_ranks?.length == 25 && full_load}
+        <!-- { week_ranks + "Happens" } -->
+        {#each week_ranks as team, index}
+          <GameCard team = { teams.filter((t) => team.school == t.school)[0] } record = { records[team.school] } ranking = { team }/>
+        {/each}
+      {/if}
   </div>
-
 </div>
-
-
-<div class="grid grid-cols-{ display_width } grid-rows-{ display_length } gap-5 p-7">
-  {#each filtered_teams.slice(i*(display_length * display_width), (i*(display_length * display_width))+(display_length * display_width)) as team, index}
-    <GameCard { team } record = { records[team.school] } ranking = { rankings[week ?? rankings.length -1]?.polls.filter(p => p.poll == poll)[0].ranks.filter(t => t.school == team.school)[0] }/>
-  {/each}
-</div>
-

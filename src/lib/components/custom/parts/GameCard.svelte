@@ -27,7 +27,7 @@
 
     export let ranking;
     
-    console.log('ranking: ', ranking)
+    console.log('ranking: ', ranking, 'team: ', team, 'record: ', record)
 
     $: c = team.color != null ? (team.altColor != null ? (isAlt ? (getColorSimilarity(team) > 2_000 ? team.altColor : (getDarkness(team) > 200_000 ? '#000_000' : '#EEE_EEE')) : team.color) : team.color) : '#000_000'
 
@@ -87,49 +87,47 @@
     )
 
     let ranking_colors = {
-        1: 'yellow-500',
-        2: 'gray-300',
-        3: '[#B87333]'
+        1: '#FFD700',
+        2: '#ACACAC',
+        3: '#B87333'
     }
 
 </script>
   
-<Card style='background-color: {c}; color: {ci};' class="flex gap-2 items-center justify-center h-32 text-lg font-semibold">
-    
-    {#if ranking?.rank}
-    <div class='text-center bg-{ ranking?.rank in ranking_colors ? ranking_colors[ranking?.rank] : 'gray-500' }  text-white rounded-full px-2'>
-        { ranking?.rank ?? '' }
-    </div>
-    {/if}
+<Card style='background-color: {c}; color: {ci};{ ranking?.rank < 13 ? 'border-color: red' : '' }' class="flex gap-2 items-center justify-center h-32 text-lg font-semibold">
+        {#if ranking?.rank}
+        <div style='background-color:{ (ranking?.rank in ranking_colors ? ranking_colors[ranking?.rank] : '#D3C4A5') + (ranking?.rank > 3 ? '80' : '') };' class='text-center text-white rounded-full px-2'>
+            { ranking?.rank ?? '' }
+        </div>
+        {/if}
 
-    <div style='background-color: {ci + "80"};' class="flex-5 flex justify-center p-1 rounded-full ">
-        <img id='logo' style="" on:error={  (e) => {e.preventDefault(); e.target.src = 'favicon.png'} } src={ logo } alt="Team Logo" width="30" height="30" /> 
-    </div>
-
-    <div style="background-color: #80808000;" class="flex-6 flex flex-col justify-center">
-
-        <div>
-            {#if team.school.length > 15 && typeof team.abbreviation != 'undefined' } 
-
-            { team.abbreviation }
-
-            {:else}
-
-            { team.school }
-
-            {/if}
-
+        <div style='background-color: {ci + "80"};' class="flex-5 flex justify-center p-1 rounded-full ">
+            <img id='logo' style="" on:error={  (e) => {e.preventDefault(); e.target.src = 'favicon.png'} } src={ logo } alt="Team Logo" width="30" height="30" /> 
         </div>
 
-        <div id="record-{ team.school }">
+        <div style="background-color: #80808000;" class="flex-6 flex flex-col justify-center">
 
-            { record?.total.wins ?? '-' } : { record?.total.losses ?? '-' } 
+            <div>
+                {#if team.school.length > 15 && typeof team.abbreviation != 'undefined' } 
 
+                { team.abbreviation }
+
+                {:else}
+
+                { team.school }
+
+                {/if}
+
+            </div>
+
+            <div id="record-{ team.school }">
+
+                { record?.total.wins ?? '-' } : { record?.total.losses ?? '-' } 
+
+            </div>
+
+            <div class=" text-xs">
+                { team?.conference ?? 'No Confrence' }
+            </div>
         </div>
-
-        <div style="color: {ci};" class=" text-xs">
-            { team?.conference ?? 'No Confrence' }
-        </div>
-
-    </div>
 </Card>
